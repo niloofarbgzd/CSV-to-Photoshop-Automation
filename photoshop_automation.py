@@ -7,7 +7,7 @@ from tkinter import filedialog, messagebox
 #Select folder function
 def select_folder(title):
     root = tk.Tk()
-    root.withdraw()  # Hide the root window
+    root.withdraw() 
     folder_path = filedialog.askdirectory(title=title)
     return folder_path
 folder_path = select_folder(title="Select the PhotoshopAutomation folder")
