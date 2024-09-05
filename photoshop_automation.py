@@ -50,7 +50,7 @@ class PhotoshopAutomationApp:
         ttk.Label(settings_frame, text="Output Format:").grid(row=0, column=0, sticky=W, pady=5)
         self.output_format = ttk.StringVar(value="PSD")
         format_combo = ttk.Combobox(settings_frame, textvariable=self.output_format, 
-                                    values=["PSD", "PDF", "PNG", "JPEG", "WEBP"], width=10)
+                                    values=["PSD", "PDF", "JPEG"], width=10)
         format_combo.grid(row=0, column=1, padx=5, pady=5)
 
         # Font Selection
@@ -78,6 +78,19 @@ class PhotoshopAutomationApp:
         self.text_color_var = ttk.StringVar(value="#3FA2CF")
         ttk.Entry(settings_frame, textvariable=self.text_color_var, width=10).grid(row=4, column=1, padx=5, pady=5, sticky=W)
         ttk.Button(settings_frame, text="Choose", command=self.select_color, style='Outline.TButton').grid(row=4, column=2, padx=5, pady=5)
+
+        # Text Location Selection
+        ttk.Label(settings_frame, text="Text Location:").grid(row=5, column=0, sticky=W, pady=5)
+        location_frame = ttk.Frame(settings_frame)
+        location_frame.grid(row=5, column=1, sticky=W, pady=5)
+        
+        self.text_x_var = ttk.IntVar(value=2235)
+        ttk.Label(location_frame, text="X:").pack(side=LEFT)
+        ttk.Spinbox(location_frame, from_=0, to=10000, textvariable=self.text_x_var, width=5).pack(side=LEFT, padx=(0, 10))
+        
+        self.text_y_var = ttk.IntVar(value=950)
+        ttk.Label(location_frame, text="Y:").pack(side=LEFT)
+        ttk.Spinbox(location_frame, from_=0, to=10000, textvariable=self.text_y_var, width=5).pack(side=LEFT)
 
         # Run Button
         ttk.Button(main_frame, text="Run Automation", command=self.run_automation, style='success.TButton').pack(pady=20)
@@ -169,6 +182,8 @@ class PhotoshopAutomationApp:
                     text_layer.textItem.color = color
 
                     text_layer.textItem.justification = ps.Justification.Center
+                    output_folder_path = os.path.join(os.path.dirname(csv_file_path), 'UpdatedFile')
+                    os.makedirs(output_folder_path, exist_ok=True)
 
                     output_file_path = os.path.join(output_folder_path, f'{row["doctor"]}.{output_format.lower()}')
 
@@ -177,12 +192,8 @@ class PhotoshopAutomationApp:
                         save_options = ps.PhotoshopSaveOptions()
                     elif output_format == "PDF":
                         save_options = ps.PDFSaveOptions()
-                    elif output_format == "PNG":
-                        save_options = ps.PNGSaveOptions()
                     elif output_format == "JPEG":
                         save_options = ps.JPEGSaveOptions(quality=12)
-                    elif output_format == "WEBP":
-                        save_options = ps.GIFSaveOptions()  # Placeholder for WebP
 
                     doc.saveAs(output_file_path, save_options, True)
                     text_layer.remove()
