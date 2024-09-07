@@ -13,18 +13,29 @@ class PhotoshopAutomationApp:
     def __init__(self, master):
         self.master = master
         master.title("Photoshop Automation")
-        master.geometry("500x900")
+        master.geometry("550x700")
 
         style = ttk.Style("darkly")
         
-        main_frame = ttk.Frame(master, padding="20")
-        main_frame.pack(fill=BOTH, expand=YES)
+        self.notebook = ttk.Notebook(master)
+        self.notebook.pack(fill=BOTH, expand=YES, padx=10, pady=10)
+
+        self.tab1 = ttk.Frame(self.notebook, padding="20")
+        self.tab2 = ttk.Frame(self.notebook, padding="20")
+
+        self.notebook.add(self.tab1, text="File Selection")
+        self.notebook.add(self.tab2, text="Settings")
+
+        self.create_tab1()
+        self.create_tab2()
+
+    def create_tab1(self):
 
         # Title
-        ttk.Label(main_frame, text="Photoshop Automation", font=("", 24, "bold")).pack(pady=(0, 20))
+        ttk.Label(self.tab1, text="Photoshop Automation", font=("", 24, "bold")).pack(pady=(0, 20))
 
         # File Selection Frame
-        file_frame = ttk.LabelFrame(main_frame, text="File Selection", padding="10")
+        file_frame = ttk.LabelFrame(self.tab1, text="File Selection", padding="10")
         file_frame.pack(fill=X, pady=10)
 
         # CSV File Selection
@@ -45,8 +56,26 @@ class PhotoshopAutomationApp:
         ttk.Entry(file_frame, textvariable=self.output_path, width=30).grid(row=2, column=1, padx=5, pady=5)
         ttk.Button(file_frame, text="Browse", command=self.select_output_folder, style='Outline.TButton').grid(row=2, column=2, pady=5)
 
+        # Row Range Selection Frame
+        row_range_frame = ttk.LabelFrame(self.tab1, text="Row Range Selection", padding="10")
+        row_range_frame.pack(fill=X, pady=10)
+
+        # Start Row Selection
+        ttk.Label(row_range_frame, text="Start Row:").grid(row=0, column=0, sticky=W, pady=5)
+        self.start_row = ttk.IntVar(value=1)
+        ttk.Spinbox(row_range_frame, from_=1, to=10000, textvariable=self.start_row, width=5).grid(row=0, column=1, padx=5, pady=5)
+
+        # End Row Selection
+        ttk.Label(row_range_frame, text="End Row:").grid(row=1, column=0, sticky=W, pady=5)
+        self.end_row = ttk.IntVar(value=10000)
+        ttk.Spinbox(row_range_frame, from_=1, to=10000, textvariable=self.end_row, width=5).grid(row=1, column=1, padx=5, pady=5)
+
+        # Next Button
+        ttk.Button(self.tab1, text="Next", command=lambda: self.notebook.select(1), style='primary.TButton').pack(pady=20)
+        
+    def create_tab2(self):
         # Text Settings Frame
-        text_settings_frame = ttk.LabelFrame(main_frame, text="Text Settings", padding="10")
+        text_settings_frame = ttk.LabelFrame(self.tab2, text="Text Settings", padding="10")
         text_settings_frame.pack(fill=X, pady=10)
 
         # Output Format Selection
@@ -65,20 +94,20 @@ class PhotoshopAutomationApp:
 
         # Font Size Selection
         ttk.Label(text_settings_frame, text="Font Size:").grid(row=2, column=0, sticky=W, pady=5)
-        self.font_size_var = ttk.IntVar(value=24)
+        self.font_size_var = ttk.IntVar(value=26)
         font_size_spin = ttk.Spinbox(text_settings_frame, from_=8, to=72, textvariable=self.font_size_var, width=5)
         font_size_spin.grid(row=2, column=1, padx=5, pady=5, sticky=W)
 
         # Font Style Selection (Bold, Italic, etc.)
         ttk.Label(text_settings_frame, text="Font Style:").grid(row=3, column=0, sticky=W, pady=5)
-        self.font_style_var = ttk.StringVar(value="Regular")
+        self.font_style_var = ttk.StringVar(value="Bold")
         font_style_combo = ttk.Combobox(text_settings_frame, textvariable=self.font_style_var, 
                                         values=["Regular", "Bold", "Italic", "Bold Italic"], width=15)
         font_style_combo.grid(row=3, column=1, padx=5, pady=5)
 
         # Color Selection
         ttk.Label(text_settings_frame, text="Text Color:").grid(row=4, column=0, sticky=W, pady=5)
-        self.text_color_var = ttk.StringVar(value="#3FA2CF")
+        self.text_color_var = ttk.StringVar(value="#000000")
         ttk.Entry(text_settings_frame, textvariable=self.text_color_var, width=10).grid(row=4, column=1, padx=5, pady=5, sticky=W)
         ttk.Button(text_settings_frame, text="Choose", command=self.select_color, style='Outline.TButton').grid(row=4, column=2, padx=5, pady=5)
 
@@ -87,21 +116,21 @@ class PhotoshopAutomationApp:
         location_frame = ttk.Frame(text_settings_frame)
         location_frame.grid(row=5, column=1, sticky=W, pady=5)
         
-        self.text_x_var = ttk.IntVar(value=2235)
+        self.text_x_var = ttk.IntVar(value=4000)
         ttk.Label(location_frame, text="X:").pack(side=LEFT)
         ttk.Spinbox(location_frame, from_=0, to=10000, textvariable=self.text_x_var, width=5).pack(side=LEFT, padx=(0, 10))
         
-        self.text_y_var = ttk.IntVar(value=950)
+        self.text_y_var = ttk.IntVar(value=2635)
         ttk.Label(location_frame, text="Y:").pack(side=LEFT)
         ttk.Spinbox(location_frame, from_=0, to=10000, textvariable=self.text_y_var, width=5).pack(side=LEFT)
 
         # QR Settings Frame
-        qr_settings_frame = ttk.LabelFrame(main_frame, text="QR Settings", padding="10")
+        qr_settings_frame = ttk.LabelFrame(self.tab2, text="QR Settings", padding="10")
         qr_settings_frame.pack(fill=X, pady=10)
 
         # QR Size Selection
         ttk.Label(qr_settings_frame, text="QR Size:").grid(row=0, column=0, sticky=W, pady=5)
-        self.qr_size_var = ttk.IntVar(value=1100)
+        self.qr_size_var = ttk.IntVar(value=1750)
         qr_size_spin = ttk.Spinbox(qr_settings_frame, from_=50, to=500, textvariable=self.qr_size_var, width=5)
         qr_size_spin.grid(row=0, column=1, padx=5, pady=5, sticky=W)
 
@@ -110,20 +139,28 @@ class PhotoshopAutomationApp:
         qr_location_frame = ttk.Frame(qr_settings_frame)
         qr_location_frame.grid(row=1, column=1, sticky=W, pady=5)
         
-        self.qr_x_var = ttk.IntVar(value=1650)
+        self.qr_x_var = ttk.IntVar(value=140)
         ttk.Label(qr_location_frame, text="X:").pack(side=LEFT)
         ttk.Spinbox(qr_location_frame, from_=0, to=10000, textvariable=self.qr_x_var, width=5).pack(side=LEFT, padx=(0, 10))
         
-        self.qr_y_var = ttk.IntVar(value=1200)
+        self.qr_y_var = ttk.IntVar(value=1625)
         ttk.Label(qr_location_frame, text="Y:").pack(side=LEFT)
         ttk.Spinbox(qr_location_frame, from_=0, to=10000, textvariable=self.qr_y_var, width=5).pack(side=LEFT)
 
-        # Run Button
-        ttk.Button(main_frame, text="Run Automation", command=self.run_automation, style='success.TButton').pack(pady=20)
+        # PNG QR without background option
+        self.png_qr_var = ttk.BooleanVar(value=False)
+        ttk.Checkbutton(qr_settings_frame, text="PNG QR without background", variable=self.png_qr_var).grid(row=2, column=0, columnspan=2, sticky=W, pady=5)
+
+        
+        # Navigation buttons
+        button_frame = ttk.Frame(self.tab2)
+        button_frame.pack(fill=X, pady=20)
+        ttk.Button(button_frame, text="Back", command=lambda: self.notebook.select(0), style='secondary.TButton').pack(side=LEFT, padx=(0, 10))
+        ttk.Button(button_frame, text="Run Automation", command=self.run_automation, style='success.TButton').pack(side=LEFT)
 
         # Status
         self.status_var = ttk.StringVar(value="Ready")
-        ttk.Label(main_frame, textvariable=self.status_var).pack()
+        ttk.Label(self.tab2, textvariable=self.status_var).pack()
 
     def populate_fonts(self):
         fonts = sorted(tkfont.families())
@@ -140,7 +177,7 @@ class PhotoshopAutomationApp:
         file_path = filedialog.askopenfilename(filetypes=[("CSV files", "*.csv")])
         if file_path:
             self.csv_path.set(file_path)
-
+   
     def select_psd(self):
         file_path = filedialog.askopenfilename(filetypes=[("PSD files", "*.psd")])
         if file_path:
@@ -151,11 +188,17 @@ class PhotoshopAutomationApp:
         if folder_path:
             self.output_path.set(folder_path)
 
-    def generate_qr_code(self, data, size):
-        qr = qrcode.QRCode(version=1, box_size=10, border=5)
+    def generate_qr_code(self, data, size, transparent=False):
+        qr = qrcode.QRCode(version=1, box_size=10, border=0)
         qr.add_data(data)
         qr.make(fit=True)
-        img = qr.make_image(fill_color="black", back_color="white")
+        
+        if transparent:
+            img = qr.make_image(fill_color="black", back_color="transparent")
+            img = img.convert("RGBA")
+        else:
+            img = qr.make_image(fill_color="black", back_color="white")
+        
         img = img.resize((size, size))
         return img
 
@@ -171,6 +214,8 @@ class PhotoshopAutomationApp:
         qr_size = self.qr_size_var.get()
         qr_x = self.qr_x_var.get()
         qr_y = self.qr_y_var.get()
+        start_row = self.start_row.get()
+        end_row = self.end_row.get()
 
         if not csv_file_path or not photoshop_file_path or not output_folder_path:
             messagebox.showerror("Error", "Please select CSV file, PSD file, and output folder.")
@@ -182,10 +227,15 @@ class PhotoshopAutomationApp:
         try:
             df = pd.read_csv(csv_file_path)
 
+            # Adjust row range based on user input
+            start_index = start_row - 1  # Convert to 0-based index
+            end_index = min(end_row, len(df))  # Ensure we don't exceed the dataframe length
+            df_subset = df.iloc[start_index:end_index]
+
             with Session() as ps:
                 doc = ps.app.open(photoshop_file_path)
 
-                for index, row in df.iterrows():
+                for index, row in df_subset.iterrows():
                     # Add text layer
                     text_layer = doc.artLayers.add()
                     text_layer.kind = ps.LayerKind.TextLayer
@@ -225,9 +275,9 @@ class PhotoshopAutomationApp:
                     os.makedirs(output_folder_path, exist_ok=True)
 
                     # Generate and add QR code
-                    qr_img = self.generate_qr_code(row['link'], qr_size)
+                    qr_img = self.generate_qr_code(row['link'], qr_size, self.png_qr_var.get())
                     temp_qr_path = os.path.join(output_folder_path, f'temp_qr_{index}.png')
-                    qr_img.save(temp_qr_path)
+                    qr_img.save(temp_qr_path, "PNG")
 
                     # Place QR code in Photoshop
                     doc.artLayers.add()
@@ -236,9 +286,10 @@ class PhotoshopAutomationApp:
                     ps.app.activeDocument.selection.copy()
                     ps.app.activeDocument.close(ps.SaveOptions.DoNotSaveChanges)
                     doc.paste()
-                    doc.activeLayer.name = f'QRLayer_{index}'
-                    doc.activeLayer.translate(qr_x - doc.activeLayer.bounds[0], qr_y - doc.activeLayer.bounds[1])
-
+                    qr_layer = doc.activeLayer
+                    qr_layer.name = f'QRLayer_{index}'
+                    qr_layer.translate(qr_x - qr_layer.bounds[0], qr_y - qr_layer.bounds[1])
+                    
                     os.remove(temp_qr_path)  # Remove temporary QR code file
 
                     output_file_path = os.path.join(output_folder_path, f'{row["doctor"]}.{output_format.lower()}')
@@ -253,6 +304,7 @@ class PhotoshopAutomationApp:
 
                     doc.saveAs(output_file_path, save_options, True)
                     text_layer.remove()
+                    qr_layer.remove()
 
                 doc.close(ps.SaveOptions.DoNotSaveChanges)
 
